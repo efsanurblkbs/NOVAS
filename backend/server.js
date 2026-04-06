@@ -11,11 +11,13 @@ import notificationRoute from "./routes/notifications.js";
 dotenv.config();
 const app = express();
 
-// Middleware
+// Middlewar
 app.use(express.json());
+// backend/server.js
 app.use(cors({
   origin: [
-    "http://localhost:5173", 
+    "http://localhost:5173",
+    "https://novas-sigma.vercel.app",
     "https://novas-git-main-efsa-bolukbass-projects.vercel.app" 
   ],
   credentials: true
