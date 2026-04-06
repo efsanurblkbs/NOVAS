@@ -1,9 +1,13 @@
 import axios from 'axios';
 import useStore from './store/useStore';
 
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8800/api',
+const API_URL = window.location.hostname === "localhost" 
+  ? "http://localhost:8800/api" 
+  : "https://novas-backend-8vb4.onrender.com/api";
+  const axiosInstance = axios.create({
+  baseURL: API_URL,
 });
+
 
 axiosInstance.interceptors.request.use(
   (config) => {
