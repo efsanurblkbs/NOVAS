@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Quicksand", "Segoe UI", sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+}
