@@ -13,7 +13,13 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173", 
+    "https://vercel.com/efsa-bolukbass-projects/novas/CNG4uE9YcFfoZN4AxDd9jQq5zRVQ" 
+  ],
+  credentials: true
+}));
 
 // Rotalar
 app.use("/api/auth", authRoute);
