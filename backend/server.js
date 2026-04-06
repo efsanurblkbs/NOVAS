@@ -18,7 +18,7 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "https://novas-sigma.vercel.app",
-    "https://novas-git-main-efsa-bolukbass-projects.vercel.app" 
+    "https://novas-git-main-efsa-bolukbass-projects.vercel.app"
   ],
   credentials: true
 }));
