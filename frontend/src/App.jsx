@@ -29,7 +29,7 @@ function App() {
         
         <motion.div initial={{opacity:0, scale:0.9}} animate={{opacity:1, scale:1}} className="bg-white/80 backdrop-blur-3xl p-16 rounded-[4rem] shadow-[0_40px_100px_rgba(0,0,0,0.06)] border border-white w-full max-w-lg z-10">
           <div className="text-center mb-10">
-            <h1 className="text-6xl font-black italic uppercase tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-[#A29BFE] via-[#FF9B9B] to-[#FFB347] mb-2 pr-4">Novas</h1>
+            <h1 className="text-6xl font-black italic uppercase tracking-tighter bg-clip-text text-transparent bg-gradient-r from-[#A29BFE] via-[#FF9B9B] to-[#FFB347] mb-2 pr-4">Novas</h1>
             <h2 className="text-sm font-bold text-slate-400 tracking-widest uppercase">{isLogin ? 'Hoş Geldin' : 'Aramıza Katıl'}</h2>
           </div>
 
@@ -40,7 +40,6 @@ function App() {
               const res = await api.post(url, formData);
               if(isLogin || res.data.token) {
                 setToken(res.data.token);
-                // remove token from user object before saving to user state
                 const { token, ...userData } = res.data;
                 setUser(userData);
               } else { setIsLogin(true); alert("Kayıt başarılı, giriş yapabilirsin."); }
@@ -67,12 +66,15 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="flex h-screen w-screen bg-slate-50 font-sans overflow-hidden">
+      {/* DEĞİŞİKLİK: flex-col ekledik (Mobilde alt alta), md:flex-row (Bilgisayarda yan yana) */}
+      <div className="flex flex-col md:flex-row h-screen w-screen bg-slate-50 font-sans overflow-hidden">
+        
         {/* Sol tarafta Sidebar Navbar */}
         <Sidebar user={user} setUser={setUser} handleLogout={handleLogout} />
         
         {/* Sağ ana içerik */}
-        <main className="flex-1 h-full relative">
+        {/* DEĞİŞİKLİK: overflow-y-auto ekledik ki mobilde içerik aşağı kaysın */}
+        <main className="flex-1 h-full relative overflow-y-auto custom-scrollbar">
           {/* Arkaplan dekorasyonları */}
           <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#A29BFE]/5 rounded-full blur-[120px] pointer-events-none"></div>
           <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#FFB347]/5 rounded-full blur-[120px] pointer-events-none"></div>
