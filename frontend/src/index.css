@@ -4,6 +4,16 @@
   --font-sans: "Quicksand", "Segoe UI", sans-serif;
 }
 
-body {
+html, body {
   font-family: var(--font-sans);
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
 }

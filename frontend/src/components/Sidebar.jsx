@@ -49,6 +49,14 @@ const Sidebar = ({ handleLogout }) => {
     } catch(err) { alert("Silinemedi"); }
   };
 
+  const handleRemoveFollower = async (id, followerId) => {
+    try {
+      await api.put(`/users/${followerId}/remove-follower`);
+      await api.delete(`/notifications/${id}`);
+      fetchNotifications();
+    } catch(err) { alert("İşlem başarısız."); }
+  };
+
   const pendingCount = unreadCount;
 
   const menuItems = [
@@ -150,7 +158,10 @@ const Sidebar = ({ handleLogout }) => {
                              <p className="text-xs md:text-sm font-bold text-slate-700">
                                <span className="text-[#A29BFE]">{n.senderName}</span> seni takip etmeye başladı! 🌟
                              </p>
-                             <button onClick={() => handleDeleteNotification(n._id)} className="w-full py-2 bg-slate-200 text-slate-600 text-[9px] uppercase font-black tracking-widest rounded-full hover:bg-slate-300 transition-all">Harika!</button>
+                             <div className="flex gap-2">
+                               <button onClick={() => handleDeleteNotification(n._id)} className="flex-1 py-2 bg-slate-200 text-slate-600 text-[9px] uppercase font-black tracking-widest rounded-full hover:bg-slate-300 transition-all">Harika!</button>
+                               <button onClick={() => handleRemoveFollower(n._id, n.senderId)} className="flex-1 py-2 bg-[#FF9B9B]/10 text-[#FF9B9B] text-[9px] uppercase font-black tracking-widest rounded-full hover:bg-[#FF9B9B] hover:text-white transition-all">Takibi Sil</button>
+                             </div>
                            </>
                          ) : (
                            <>
@@ -196,9 +207,9 @@ const Sidebar = ({ handleLogout }) => {
              </div>
           </div>
 
-          <button onClick={handleLogout} className="p-3 md:p-4 md:w-full rounded-full md:rounded-[2rem] text-slate-400 hover:text-[#FF9B9B] hover:bg-[#FF9B9B]/10 transition-all font-bold">
+          <button onClick={handleLogout} className="p-3 md:p-4 md:w-full rounded-full md:rounded-[2rem] text-slate-400 hover:text-[#FF9B9B] hover:bg-[#FF9B9B]/10 transition-all font-bold flex items-center justify-center md:justify-start gap-2">
             <LogOut size={20} />
-            <span className="hidden md:inline ml-2 text-sm">Çıkış</span>
+            <span className="hidden md:inline text-sm">Çıkış</span>
           </button>
         </div>
       )}

@@ -98,7 +98,7 @@ const Profile = ({ currentUser }) => {
             <div className="flex items-center gap-4">
               {currentUser._id !== profile._id && (
                 <button onClick={handleFollow} className="px-8 py-4 rounded-full text-xs font-black text-white uppercase tracking-widest shadow-md hover:scale-105 transition-transform" style={{background: rainbow}}>
-                  {profile.followers?.includes(currentUser._id) ? "Takibi Bırak" : "Takip Et ⭐️"}
+                  {profile.followers?.includes(currentUser._id) ? "Takibi Bırak" : "Takip Et"}
                 </button>
               )}
             </div>

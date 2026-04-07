@@ -82,3 +82,18 @@ export const unfollowUser = async (req, res) => {
     } catch (err) { res.status(500).json(err); }
   } else { res.status(403).json("Kendini takipten çıkaramazsın."); }
 };
+
+export const removeFollower = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id); // Bendeyim
+    const follower = await User.findById(req.params.id); // Çıkarılacak takipçi
+    
+    if (user.followers.includes(req.params.id)) {
+      await user.updateOne({ $pull: { followers: req.params.id } });
+      await follower.updateOne({ $pull: { followings: req.user.id } });
+      res.status(200).json("Takipçi başarıyla çıkarıldı.");
+    } else {
+      res.status(404).json("Takipçi bulunamadı.");
+    }
+  } catch (err) { res.status(500).json(err); }
+};

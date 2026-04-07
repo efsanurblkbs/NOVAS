@@ -172,7 +172,7 @@ const DiaryView = ({ diary, onBack, managementMode = false, allowWrite = false }
                     </label>
                  </div>
 
-                 <textarea className="flex-1 w-full mt-4 text-base md:text-xl leading-[40px] md:leading-[48px] border-none outline-none focus:ring-0 resize-none font-light text-slate-700 bg-transparent min-h-[300px]" style={{backgroundImage: "linear-gradient(transparent, transparent 39px, #EADED7 39px)", backgroundSize: "100% 40px"}} placeholder="Bugün neler oldu?" value={newPost.desc} onChange={e=>setNewPost({...newPost, desc:e.target.value})} required/>
+                 <textarea className="flex-1 w-full mt-4 text-base md:text-xl leading-[40px] md:leading-[48px] border-none outline-none focus:ring-0 resize-none font-light text-slate-700 bg-transparent min-h-[300px] py-0" style={{backgroundImage: "linear-gradient(transparent, transparent 39px, #EADED7 39px)", backgroundSize: `100% ${window.innerWidth < 768 ? '40px' : '48px'}`}} placeholder="Bugün neler oldu?" value={newPost.desc} onChange={e=>setNewPost({...newPost, desc:e.target.value})} required/>
                  
                  <button type="submit" className="w-full py-5 mt-4 rounded-2xl text-white font-black uppercase text-[10px] tracking-[0.3em] shadow-lg" style={{background:rainbow}}>
                    Kaydet
@@ -188,7 +188,7 @@ const DiaryView = ({ diary, onBack, managementMode = false, allowWrite = false }
                  <h2 className="text-2xl md:text-4xl font-black text-slate-800 italic uppercase mb-6 leading-tight">{selectedPost.title}</h2>
                  <div className="flex-1 pb-10">
                    {selectedPost.img && <img src={selectedPost.img} alt="" className="mb-6 w-full rounded-xl shadow-sm object-cover max-h-64" />}
-                   <p className="text-base md:text-lg leading-[40px] md:leading-[48px] font-light text-slate-700 italic whitespace-pre-wrap px-2" style={{backgroundImage: "linear-gradient(transparent, transparent 39px, #EADED7 39px)", backgroundSize: "100% 40px"}}>
+                   <p className="text-base md:text-lg leading-[40px] md:leading-[48px] font-light text-slate-700 italic whitespace-pre-wrap px-2 py-0" style={{backgroundImage: "linear-gradient(transparent, transparent 39px, #EADED7 39px)", backgroundSize: `100% ${window.innerWidth < 768 ? '40px' : '48px'}`}}>
                      {selectedPost.desc}
                    </p>
                  </div>
@@ -196,7 +196,7 @@ const DiaryView = ({ diary, onBack, managementMode = false, allowWrite = false }
             ) : isEditing ? (
               <motion.form key="edit" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onSubmit={handleSubmit} className="flex-1 flex flex-col h-full">
                  <input className="w-full text-3xl md:text-5xl font-black border-none focus:ring-0 text-slate-800 p-0 outline-none" value={newPost.title} onChange={e=>setNewPost({...newPost, title:e.target.value})} required/>
-                 <textarea className="flex-1 w-full mt-6 text-base md:text-xl leading-[40px] md:leading-[48px] border-none outline-none focus:ring-0 resize-none font-light text-slate-700 bg-transparent min-h-[300px]" style={{backgroundImage: "linear-gradient(transparent, transparent 39px, #EADED7 39px)", backgroundSize: "100% 40px"}} value={newPost.desc} onChange={e=>setNewPost({...newPost, desc:e.target.value})} required/>
+                 <textarea className="flex-1 w-full mt-6 text-base md:text-xl leading-[40px] md:leading-[48px] border-none outline-none focus:ring-0 resize-none font-light text-slate-700 bg-transparent min-h-[300px] py-0" style={{backgroundImage: "linear-gradient(transparent, transparent 39px, #EADED7 39px)", backgroundSize: `100% ${window.innerWidth < 768 ? '40px' : '48px'}`}} value={newPost.desc} onChange={e=>setNewPost({...newPost, desc:e.target.value})} required/>
                  <button type="submit" className="w-full py-5 mt-4 rounded-2xl text-white font-black uppercase text-[10px] tracking-[0.3em] shadow-lg" style={{background:rainbow}}>Güncelle</button>
               </motion.form>
             ) : null}

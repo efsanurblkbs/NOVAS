@@ -66,8 +66,8 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* DEĞİŞİKLİK: flex-col ekledik (Mobilde alt alta), md:flex-row (Bilgisayarda yan yana) */}
-      <div className="flex flex-col md:flex-row h-screen w-screen bg-slate-50 font-sans overflow-hidden">
+      {/* DEĞİŞİKLİK: w-screen yerine w-full kullanarak mobil taşmaları önledik */}
+      <div className="flex flex-col md:flex-row h-full min-h-screen w-full bg-slate-50 font-sans overflow-hidden">
         
         {/* Sol tarafta Sidebar Navbar */}
         <Sidebar user={user} setUser={setUser} handleLogout={handleLogout} />
