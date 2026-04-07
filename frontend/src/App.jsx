@@ -66,8 +66,8 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* DEĞİŞİKLİK: w-screen yerine w-full kullanarak mobil taşmaları önledik */}
-      <div className="flex flex-col md:flex-row h-full min-h-screen w-full bg-slate-50 font-sans overflow-hidden">
+      {/* ANA TAŞIYICI: h-screen kullanarak tam ekran sabit yapıyı koruyoruz, bu sayede takılmaların önüne geçiyoruz */}
+      <div className="flex flex-col md:flex-row h-screen w-full bg-slate-50 font-sans overflow-hidden">
         
         {/* Sol tarafta Sidebar Navbar */}
         <Sidebar user={user} setUser={setUser} handleLogout={handleLogout} />
