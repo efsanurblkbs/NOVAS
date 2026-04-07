@@ -58,6 +58,19 @@ export const respondToRequest = async (req, res) => {
     }
     
     await notification.save();
+
+    // Bi-directional Notification: İsteği atan kişiye (requester) sonucu bildir.
+    const resultNotification = new Notification({
+      senderId: req.user.id,
+      receiverId: notification.senderId,
+      senderName: req.user.username,
+      type: "ACCESS_RESULT",
+      diaryId: notification.diaryId,
+      diaryTitle: notification.diaryTitle,
+      status: action === "APPROVE" ? "APPROVED" : "REJECTED"
+    });
+    await resultNotification.save();
+
     res.status(200).json(notification);
   } catch (err) { res.status(500).json(err); }
 };

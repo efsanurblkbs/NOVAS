@@ -173,7 +173,14 @@ const Sidebar = ({ handleLogout }) => {
                                   <button onClick={()=>handleRespond(n._id, "APPROVE")} className="flex-1 py-2 bg-[#6BCB77] text-white text-[9px] uppercase font-black tracking-widest rounded-full hover:bg-opacity-80 transition-all">İzin Ver</button>
                                   <button onClick={()=>handleRespond(n._id, "REJECT")} className="flex-1 py-2 bg-[#FF9B9B] text-white text-[9px] uppercase font-black tracking-widest rounded-full hover:bg-opacity-80 transition-all">Reddet</button>
                                </div>
-                             ) : (
+                             ) : n.type === "ACCESS_RESULT" ? (
+                            <>
+                              <p className="text-xs md:text-sm font-bold text-slate-700">
+                                <span className="text-[#A29BFE]">{n.senderName}</span>, <span className="italic">"{n.diaryTitle}"</span> defterine erişim isteğini <span className={n.status === "APPROVED" ? "text-[#6BCB77]" : "text-[#FF9B9B]"}>{n.status === "APPROVED" ? "ONAYLADI! " : "REDDETTİ. "}</span>
+                              </p>
+                              <button onClick={() => handleDeleteNotification(n._id)} className="w-full py-2 bg-slate-200 text-slate-600 text-[9px] uppercase font-black tracking-widest rounded-full hover:bg-slate-300 transition-all">Anladım</button>
+                            </>
+                          ) : (
                                <div className="flex items-center justify-between border-t border-slate-200 mt-1 pt-2">
                                  <p className="text-[9px] uppercase font-black tracking-widest text-slate-400">KARAR: {n.status}</p>
                                  <button onClick={() => handleDeleteNotification(n._id)} className="text-[9px] text-slate-400 hover:text-slate-700 uppercase font-bold transition-all">Gizle</button>
