@@ -16,7 +16,7 @@ NOVAS, kullanıcıların kendi özel günlüklerini tutabildiği, birbirlerini t
 ## 🚀 Canlı Linkler
 Projenin yayında olan versiyonlarına aşağıdaki bağlantılardan hemen ulaşabilirsiniz:
 
-- 🎨 **Frontend (UI Yayını):** [novas-git-main-efsa-bolukbass-projects.vercel.app](https://novas-sigma.vercel.app)
+- 🎨 **Frontend (UI Yayını):** (https://novas-sigma.vercel.app/)
 - ⚙️ **Backend (API Yayını):** [novas-backend-8vb4.onrender.com](https://novas-backend-8vb4.onrender.com)
 
 ---
