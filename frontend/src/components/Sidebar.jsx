@@ -22,8 +22,8 @@ const Sidebar = ({ handleLogout }) => {
   useEffect(() => {
     fetchNotifications();
 
-    // Smart Polling: Her 15 saniyede bir kontrol et
-    const interval = setInterval(fetchNotifications, 15000);
+    // Smart Polling: Her 10 saniyede bir kontrol et
+    const interval = setInterval(fetchNotifications, 10000);
 
     // Focus Refresh: Sekmeye geri dönünce tazele
     const handleFocus = () => fetchNotifications();

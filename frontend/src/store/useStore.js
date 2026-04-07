@@ -11,7 +11,8 @@ const useStore = create(
       setUser: (user) => set({ user }),
       setToken: (token) => set({ token }),
       setNotifications: (notifications) => {
-        const unread = notifications.filter(n => n.status === "PENDING").length;
+        // Tüm bildirimleri (Takip, Onay/Red sonucu ve İstekler) "Okunmamış" say
+        const unread = notifications.length;
         set({ notifications, unreadCount: unread });
       },
       logout: () => set({ user: null, token: null, notifications: [], unreadCount: 0 }),
