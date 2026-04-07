@@ -66,20 +66,20 @@ function App() {
 
   return (
     <BrowserRouter>
-      {/* ANA TAŞIYICI: h-screen kullanarak tam ekran sabit yapıyı koruyoruz, bu sayede takılmaların önüne geçiyoruz */}
-      <div className="flex flex-col md:flex-row h-screen w-full bg-slate-50 font-sans overflow-hidden">
+      {/* ANA TAŞIYICI: h-[100dvh] kullanarak tüm tarayıçılarda ve mobilde tam ekranı kusursuzca dolduruyoruz */}
+      <div className="flex flex-col md:flex-row h-[100dvh] w-full bg-slate-50 font-sans overflow-hidden relative">
         
         {/* Sol tarafta Sidebar Navbar */}
         <Sidebar user={user} setUser={setUser} handleLogout={handleLogout} />
         
         {/* Sağ ana içerik */}
-        {/* DEĞİŞİKLİK: overflow-y-auto ekledik ki mobilde içerik aşağı kaysın */}
-        <main className="flex-1 h-full relative overflow-y-auto custom-scrollbar">
-          {/* Arkaplan dekorasyonları */}
-          <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#A29BFE]/5 rounded-full blur-[120px] pointer-events-none"></div>
-          <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#FFB347]/5 rounded-full blur-[120px] pointer-events-none"></div>
-          
-          <FloatingCats />
+        <main className="flex-1 h-full relative overflow-y-auto overflow-x-hidden custom-scrollbar">
+          {/* DEKORATİF ARKA PLAN: Sadece bu katman içinde taşmaları engeller */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+            <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#A29BFE]/5 rounded-full blur-[120px]"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#FFB347]/5 rounded-full blur-[120px]"></div>
+            <FloatingCats />
+          </div>
 
           <Routes>
             <Route path="/" element={<Home currentUser={user} />} />

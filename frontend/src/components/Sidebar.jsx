@@ -85,7 +85,7 @@ const Sidebar = ({ handleLogout }) => {
 
   return (
     /* ANA TAŞIYICI: Mobilde üstte bar, bilgisayarda solda sütun */
-    <div className="w-full md:w-72 h-auto md:h-full bg-white/70 backdrop-blur-xl border-b md:border-r border-slate-100 flex flex-row md:flex-col items-center py-4 md:py-12 px-4 md:px-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)] md:shadow-[10px_0_50px_rgba(0,0,0,0.02)] relative z-[100]">
+    <div className="w-full md:w-72 h-auto md:h-full bg-white/70 backdrop-blur-xl border-b md:border-r border-slate-100 flex flex-row md:flex-col items-center py-4 md:py-12 px-4 md:px-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)] md:shadow-[10px_0_50px_rgba(0,0,0,0.02)] relative z-[100] flex-shrink-0">
       
       {/* Logo: Mobilde gizli, bilgisayarda havalı */}
       <div className="hidden md:block mb-14 text-center">
@@ -101,7 +101,7 @@ const Sidebar = ({ handleLogout }) => {
       </div>
 
       {/* Menü: Mobilde ikonlar yan yana */}
-      <nav className="flex flex-row md:flex-col flex-1 w-full space-x-2 md:space-x-0 md:space-y-4">
+      <nav className="flex flex-row md:flex-col flex-1 w-full gap-1 md:gap-4 md:space-x-0">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path || location.pathname + location.search === item.path;
           return (
@@ -129,7 +129,7 @@ const Sidebar = ({ handleLogout }) => {
       </nav>
 
       {user && (
-        <div className="flex md:flex-col items-center gap-2 md:gap-0 md:w-full md:mt-auto relative ml-4 md:ml-0">
+        <div className="flex md:flex-col items-center gap-2 md:gap-0 md:w-full md:mt-auto relative md:ml-0">
           
           {/* BİLDİRİM BUTONU */}
           <button onClick={() => setShowNotifications(!showNotifications)} className="p-3 md:p-4 md:mb-4 rounded-full md:rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all group relative">

@@ -10,4 +10,13 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: #f8fafc; /* slate-50 */
+  width: 100%;
+  position: relative;
+  touch-action: pan-y;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
 }

@@ -27,8 +27,8 @@ const Home = ({ currentUser }) => {
   const filteredUsers = users.filter((u) => u.username.toLowerCase().includes(searchQuery.toLowerCase()));
 
   return (
-    <div className="w-full h-full p-6 md:p-12 overflow-y-auto custom-scrollbar bg-slate-50/30">
-      <div className="max-w-4xl mx-auto">
+    <div className="w-full h-full p-4 md:p-12 overflow-y-auto custom-scrollbar bg-slate-50/30 overflow-x-hidden">
+      <div className="max-w-4xl mx-auto w-full">
         <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
            <div>
              <h1 className="text-4xl md:text-5xl font-black text-slate-800 italic uppercase tracking-tighter mb-2">Keşfet</h1>
