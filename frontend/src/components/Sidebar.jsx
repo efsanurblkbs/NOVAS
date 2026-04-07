@@ -59,12 +59,10 @@ const Sidebar = ({ handleLogout }) => {
   };
 
   return (
-    /* DEĞİŞİKLİK: w-full (mobilde tam genişlik), md:w-72 (bilgisayarda sabit genişlik). 
-       h-auto (mobilde içerik kadar), md:h-full (bilgisayarda tam boy). 
-       flex-row (mobilde yan yana), md:flex-col (bilgisayarda alt alta). */
-    <div className="w-full md:w-72 h-auto md:h-full bg-white/70 backdrop-blur-xl border-b md:border-r border-slate-100 flex flex-row md:flex-col items-center py-4 md:py-12 px-4 md:px-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)] md:shadow-[10px_0_50px_rgba(0,0,0,0.02)] relative z-20">
+    /* ANA TAŞIYICI: Mobilde üstte bar, bilgisayarda solda sütun */
+    <div className="w-full md:w-72 h-auto md:h-full bg-white/70 backdrop-blur-xl border-b md:border-r border-slate-100 flex flex-row md:flex-col items-center py-4 md:py-12 px-4 md:px-6 shadow-[0_10px_30px_rgba(0,0,0,0.02)] md:shadow-[10px_0_50px_rgba(0,0,0,0.02)] relative z-[100]">
       
-      {/* Logo Alanı - Mobilde gizledik veya küçülttük */}
+      {/* Logo: Mobilde gizli, bilgisayarda havalı */}
       <div className="hidden md:block mb-14 text-center">
         <motion.h1 
           animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
@@ -77,7 +75,7 @@ const Sidebar = ({ handleLogout }) => {
         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Your Diary</p>
       </div>
 
-      {/* Menü İtemları - Mobilde yan yana diziliyor */}
+      {/* Menü: Mobilde ikonlar yan yana */}
       <nav className="flex flex-row md:flex-col flex-1 w-full space-x-2 md:space-x-0 md:space-y-4">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path || location.pathname + location.search === item.path;
@@ -95,7 +93,6 @@ const Sidebar = ({ handleLogout }) => {
                 <div className={`${isActive ? "text-[#FF9B9B]" : ""}`}>
                    {item.icon}
                 </div>
-                {/* Mobilde isimleri gizleyip sadece ikon bıraktık (daha ferah durur) */}
                 <span className="hidden md:block font-bold tracking-wide">{item.name}</span>
                 {isActive && (
                   <motion.div layoutId="sidebar-active" className="hidden md:block absolute left-0 w-1 h-8 bg-gradient-to-b from-[#A29BFE] to-[#FF9B9B] rounded-r-lg" />
@@ -107,9 +104,9 @@ const Sidebar = ({ handleLogout }) => {
       </nav>
 
       {user && (
-        /* Alt Kısım (Profil ve Bildirim) - Mobilde yan yana sığması için düzenlendi */
         <div className="flex md:flex-col items-center gap-2 md:gap-0 md:w-full md:mt-auto relative ml-4 md:ml-0">
           
+          {/* BİLDİRİM BUTONU */}
           <button onClick={() => setShowNotifications(!showNotifications)} className="p-3 md:p-4 md:mb-4 rounded-full md:rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all group relative">
              <Bell size={20} className={`${pendingCount > 0 ? 'text-[#FF9B9B] animate-pulse' : 'text-slate-500'}`} />
              {pendingCount > 0 && <span className="absolute top-0 right-0 bg-[#FF9B9B] text-white text-[8px] px-1.5 py-0.5 rounded-full border-2 border-white">{pendingCount}</span>}
@@ -117,8 +114,13 @@ const Sidebar = ({ handleLogout }) => {
 
           <AnimatePresence>
             {showNotifications && (
-              /* Bildirim Paneli - Mobilde sağa yasladık */
-              <motion.div initial={{opacity:0, y:20}} animate={{opacity:1, y:0}} exit={{opacity:0, y:20}} className="absolute bottom-[calc(100%+20px)] right-0 md:left-0 w-[300px] md:w-[400px] bg-white/95 backdrop-blur-2xl border border-slate-100 rounded-3xl shadow-2xl p-4 md:p-6 z-50">
+              /* GÜNCELLENEN BİLDİRİM PANELİ: Mobilde aşağı, PC'de yukarı açılır */
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                exit={{ opacity: 0, y: -10 }} 
+                className="absolute top-[calc(100%+15px)] md:top-auto md:bottom-[calc(100%+15px)] right-0 md:left-0 w-[280px] md:w-[400px] bg-white/95 backdrop-blur-2xl border border-slate-100 rounded-3xl shadow-2xl p-4 md:p-6 z-[999]"
+              >
                  <h3 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-400 mb-4 border-b border-slate-100 pb-2">Gelen İstekler</h3>
                  <div className="max-h-64 overflow-y-auto custom-scrollbar space-y-4">
                     {notifications.length === 0 ? (
@@ -159,7 +161,7 @@ const Sidebar = ({ handleLogout }) => {
             )}
           </AnimatePresence>
 
-          {/* Profil Avatarı - Mobilde sadece fotoğraf görünüyor, isim gizli */}
+          {/* Profil & Çıkış */}
           <div className="flex items-center gap-2 md:w-full md:mb-4 md:p-4 rounded-full md:rounded-[2rem] md:bg-slate-50/50 md:border md:border-slate-100">
              <label className={`relative flex-shrink-0 cursor-pointer rounded-full group ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
