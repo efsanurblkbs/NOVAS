@@ -6,9 +6,15 @@ const useStore = create(
     (set) => ({
       user: null,
       token: null,
+      notifications: [],
+      unreadCount: 0,
       setUser: (user) => set({ user }),
       setToken: (token) => set({ token }),
-      logout: () => set({ user: null, token: null }),
+      setNotifications: (notifications) => {
+        const unread = notifications.filter(n => n.status === "PENDING").length;
+        set({ notifications, unreadCount: unread });
+      },
+      logout: () => set({ user: null, token: null, notifications: [], unreadCount: 0 }),
     }),
     {
       name: 'novas-storage', // unique name

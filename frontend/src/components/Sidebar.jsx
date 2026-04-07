@@ -6,33 +6,50 @@ import { useState, useEffect } from "react";
 import useStore from "../store/useStore";
 
 const Sidebar = ({ handleLogout }) => {
-  const { user, setUser } = useStore();
+  const { user, setUser, notifications, setNotifications, unreadCount } = useStore();
   const location = useLocation();
   const [isUploading, setIsUploading] = useState(false);
-  const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  const fetchNotifications = async () => {
+    if (!user) return;
+    try {
+      const res = await api.get("/notifications");
+      setNotifications(res.data);
+    } catch (err) { console.error("Bildirimler tazelenemedi:", err); }
+  };
+
   useEffect(() => {
-    if (user) {
-       api.get("/notifications").then(res => setNotifications(res.data)).catch(err => console.log(err));
-    }
+    fetchNotifications();
+
+    // Smart Polling: Her 15 saniyede bir kontrol et
+    const interval = setInterval(fetchNotifications, 15000);
+
+    // Focus Refresh: Sekmeye geri dönünce tazele
+    const handleFocus = () => fetchNotifications();
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, [user]);
 
   const handleRespond = async (id, action) => {
     try {
       await api.put(`/notifications/${id}/respond`, { action });
-      setNotifications(prev => prev.filter(n => n._id !== id));
+      fetchNotifications(); // Listeyi güncelle
     } catch(err) { alert("Hata oluştu"); }
   };
 
   const handleDeleteNotification = async (id) => {
     try {
       await api.delete(`/notifications/${id}`);
-      setNotifications(prev => prev.filter(n => n._id !== id));
+      fetchNotifications(); // Listeyi güncelle
     } catch(err) { alert("Silinemedi"); }
   };
 
-  const pendingCount = notifications.filter(n => n.status === "PENDING").length;
+  const pendingCount = unreadCount;
 
   const menuItems = [
     { name: "Ana Sayfa", path: "/", icon: <Home size={24} /> },

@@ -10,6 +10,7 @@ const rainbow = "linear-gradient(90deg, #FFB5B5, #FFD6A5, #CAFFBF, #9BF6FF, #A0C
 
 const Profile = ({ currentUser }) => {
   const { id } = useParams();
+  const { user: currentUser, notifications } = useStore();
   const [profile, setProfile] = useState(null);
   const [diaries, setDiaries] = useState([]);
   const [activeDiary, setActiveDiary] = useState(null);
@@ -21,6 +22,14 @@ const Profile = ({ currentUser }) => {
       setActiveDiary(null);
     }
   }, [id, currentUser]);
+
+  // Bildirimler her güncellendiğinde (Sidebar polling sayesinde), 
+  // defterlerin durumunu da tazele ki kilitler otomatik açılsın.
+  useEffect(() => {
+    if(id && currentUser) {
+      fetchDiaries(id);
+    }
+  }, [notifications]);
 
   const fetchProfile = async (profileId) => {
     try {
@@ -143,7 +152,11 @@ const Profile = ({ currentUser }) => {
                               <motion.div initial={{scale:0}} whileInView={{scale:1}} className="bg-white/10 p-4 rounded-full mb-6 border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                                  <Lock size={32} className="text-white" />
                               </motion.div>
-                              <span className="text-[10px] font-black uppercase text-[#E5CCA5] tracking-widest text-center border-2 border-[#E5CCA5] rounded-full px-6 py-3 hover:bg-[#E5CCA5] hover:text-slate-900 transition-all shadow-xl shadow-[#E5CCA5]/20">Erişim İste</span>
+                               {notifications.some(n => n.diaryId === diary._id && n.status === "PENDING") ? (
+                                 <span className="text-[10px] font-black uppercase text-white/50 tracking-widest text-center border-2 border-white/10 rounded-full px-6 py-3 bg-white/5">İstek Bekleniyor...</span>
+                               ) : (
+                                 <span className="text-[10px] font-black uppercase text-[#E5CCA5] tracking-widest text-center border-2 border-[#E5CCA5] rounded-full px-6 py-3 hover:bg-[#E5CCA5] hover:text-slate-900 transition-all shadow-xl shadow-[#E5CCA5]/20">Erişim İste</span>
+                               )}
                            </div>
                          </>
                        ) : diary.isPrivate && (
