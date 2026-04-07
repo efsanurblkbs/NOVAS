@@ -10,7 +10,7 @@ const rainbow = "linear-gradient(90deg, #FFB5B5, #FFD6A5, #CAFFBF, #9BF6FF, #A0C
 
 const Profile = ({ currentUser }) => {
   const { id } = useParams();
-  const { user: currentUser, notifications } = useStore();
+  const { notifications } = useStore();
   const [profile, setProfile] = useState(null);
   const [diaries, setDiaries] = useState([]);
   const [activeDiary, setActiveDiary] = useState(null);
