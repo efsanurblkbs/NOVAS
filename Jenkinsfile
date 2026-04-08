@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-       
+        // 1. AŞAMA: Kodları GitHub'dan çek
         stage('Checkout') {
             steps {
                 echo 'Kodlar GitHubdan çekiliyor...'
@@ -10,24 +10,16 @@ pipeline {
             }
         }
 
-        
-        stage('Install Dependencies') {
-            steps {
-                echo 'Kütüphaneler yükleniyor...'
-                sh 'cd backend && npm install --legacy-peer-deps'
-                sh 'cd frontend && npm install --legacy-peer-deps'
-            }
-        }
-
-        
+        // 2. AŞAMA: Docker İmajlarını Oluştur (npm install zaten Dockerfile içinde var!)
         stage('Docker Build') {
             steps {
-                echo 'Docker imajları hazırlanıyor...'
-                sh 'docker-compose build'
+                echo 'Docker imajları hazırlanıyor (Kütüphaneler konteyner içinde yüklenecek)...'
+                // --no-cache kullanarak her seferinde taze kurulum yapmasını garanti ederiz
+                sh 'docker-compose build --no-cache'
             }
         }
 
-       
+        // 3. AŞAMA: Yayına Al
         stage('Deploy') {
             steps {
                 echo 'NOVAS Docker üzerinde ayağa kalkıyor...'
@@ -37,7 +29,6 @@ pipeline {
         }
     }
 
-    
     post {
         always {
             echo 'İşlem tamamlandı, Jenkins görevini bitirdi.'
