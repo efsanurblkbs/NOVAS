@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build: ./backend
+    ports:
+      - "8800:8800"
+    environment:
+      - MONGO_URL='mongodb+srv://arines4927_db_user:efsa1234@novas.yrdxc1g.mongodb.net/?appName=novas'
+    
+  
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
