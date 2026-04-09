@@ -26,18 +26,24 @@ const Home = ({ currentUser }) => {
     if (currentUser?._id) fetchUsers();
   }, [currentUser]);
 
-  // FİLTRELEME MANTIĞI
+  // --- HİBRİT FİLTRELEME MANTIĞI ---
   const filteredUsers = users.filter((u) => {
     const matchesSearch = u.username.toLowerCase().includes(searchQuery.toLowerCase());
     
-    // Hem following hem followings ihtimaline karşı ikisini de kontrol eden güvenli liste
-    const followingList = currentUser?.following || currentUser?.followings || [];
-    const isFollowed = followingList.some(id => id.toString() === u._id.toString());
+    // Veritabanındaki hem 'following' hem 'followings' alanlarını birleştirip tek bir liste yapıyoruz
+    const f1 = currentUser?.following || [];
+    const f2 = currentUser?.followings || [];
+    const combinedFollowing = [...f1, ...f2].map(id => id.toString());
+    
+    // Bu kullanıcı takip edilenler listesinde var mı?
+    const isFollowed = combinedFollowing.includes(u._id.toString());
 
     if (activeTab === "following") {
-      return matchesSearch && isFollowed; // Sadece takip ettiklerim
+      // Arkadaşlar sekmesi: Sadece takip edilenler
+      return matchesSearch && isFollowed;
     } else {
-      return matchesSearch && !isFollowed; // Keşfet: Sadece takip ETMEDİKLERİM
+      // Keşfet sekmesi: Sadece takip EDİLMEYENLER
+      return matchesSearch && !isFollowed;
     }
   });
 
@@ -142,7 +148,7 @@ const Home = ({ currentUser }) => {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full py-20 text-center">
                 <div className="bg-white/50 inline-block p-10 rounded-[3rem] border border-dashed border-slate-200">
                   <p className="text-slate-400 font-bold italic uppercase tracking-widest text-[10px]">
-                    {activeTab === "following" ? "Henüz kimseyi takip etmiyorsun ✨" : "Keşfedecek kimse kalmadı, hepsini takip ediyorsun! ✨"}
+                    {activeTab === "following" ? "Takip listen pofuduk bir sessizlik içinde... ✨" : "Herkesi takip ediyorsun, pofuduk radarına kimse takılmadı! ✨"}
                   </p>
                 </div>
               </motion.div>
