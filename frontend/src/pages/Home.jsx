@@ -16,7 +16,7 @@ const Home = ({ currentUser }) => {
       setLoading(true);
       try {
         const res = await api.get("/users");
-        // Kendimizi listeden çıkarıyoruz
+        // Kendimizi her zaman listeden çıkarıyoruz
         setUsers(res.data.filter(u => u._id !== currentUser?._id));
       } catch (err) {
         console.error("Kullanıcılar getirilemedi:", err);
@@ -27,18 +27,21 @@ const Home = ({ currentUser }) => {
     if (currentUser) fetchUsers();
   }, [currentUser]);
 
-  // --- TAKİP LİSTESİ FİLTRELEME (GÜÇLENDİRİLMİŞ) ---
+  // --- GELİŞMİŞ FİLTRELEME MANTIĞI ---
   const filteredUsers = users.filter((u) => {
     const matchesSearch = u.username.toLowerCase().includes(searchQuery.toLowerCase());
     
+    // Takip listesini string dizisi olarak alalım (Garantiye almak için)
+    const followingIds = currentUser?.following?.map(id => id.toString()) || [];
+    const isAlreadyFollowed = followingIds.includes(u._id.toString());
+
     if (activeTab === "following") {
-      // currentUser.following içindeki ID'leri string'e çevirip karşılaştırıyoruz
-      const followingList = currentUser?.following || [];
-      const isFollowed = followingList.some(id => id.toString() === u._id.toString());
-      return matchesSearch && isFollowed;
+      // Sadece takip edilenleri göster
+      return matchesSearch && isAlreadyFollowed;
+    } else {
+      // Keşfet: Sadece takip EDİLMEYENLERİ göster
+      return matchesSearch && !isAlreadyFollowed;
     }
-    
-    return matchesSearch;
   });
 
   return (
@@ -52,7 +55,7 @@ const Home = ({ currentUser }) => {
             </h1>
             <p className="text-[10px] md:text-sm font-bold text-slate-400 uppercase flex items-center gap-2">
               <Sparkles size={16} className="text-[#FFB347]" /> 
-              {activeTab === "explore" ? "Yeni insanlar bul" : "Takip ettiklerini gör"}
+              {activeTab === "explore" ? "Yeni pofuduk dostlar bul" : "Sadece sevdiğin yazarlar"}
             </p>
           </div>
           <div className="relative w-full md:w-72">
@@ -105,9 +108,9 @@ const Home = ({ currentUser }) => {
               filteredUsers.map(u => (
                 <motion.div 
                   key={u._id} 
-                  initial={{ opacity: 0, y: 10 }} 
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }} 
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.2 }}
                 >
                   <Link to={`/profile/${u._id}`}>
@@ -163,9 +166,11 @@ const Home = ({ currentUser }) => {
                 animate={{ opacity: 1 }} 
                 className="col-span-full py-20 text-center"
               >
-                <div className="bg-white/50 inline-block p-8 rounded-[3rem] border border-dashed border-slate-200">
-                  <p className="text-slate-400 font-bold italic uppercase tracking-widest text-xs">
-                    {activeTab === "following" ? "Buralar biraz sessiz... Henüz kimseyi takip etmiyorsun." : "Kimseyi bulamadık pofuduk dostum."}
+                <div className="bg-white/50 inline-block p-10 rounded-[3rem] border border-dashed border-slate-200">
+                  <p className="text-slate-400 font-bold italic uppercase tracking-widest text-[10px]">
+                    {activeTab === "following" 
+                      ? "Henüz kimseyi takip etmiyorsun. Keşfet sekmesinden yeni dostlar bulabilirsin! ✨" 
+                      : "Burada kimse kalmamış... Belki de herkesi zaten takip ediyorsun? ✨"}
                   </p>
                 </div>
               </motion.div>
