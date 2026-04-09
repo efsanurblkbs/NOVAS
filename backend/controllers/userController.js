@@ -14,26 +14,33 @@ export const updateAvatar = async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 };
 
+// userController.js içindeki getAllUsers fonksiyonu
 export const getAllUsers = async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 20;
-    const skip = (page - 1) * limit;
-
-    const users = await User.find().skip(skip).limit(limit);
-    const publicDiaries = await Diary.find({ isPrivate: false });
+    const users = await User.find().select("-password");
     
-    const cleanUsers = users.map(user => {
-      const { password, ...other } = user._doc;
-      const userPublicDiaries = publicDiaries.filter(d => d.authorId === other._id.toString());
-      return { 
-        ...other, 
-        diaryCount: userPublicDiaries.length
-      };
-    });
-    res.status(200).json(cleanUsers);
-  } catch (err) { res.status(500).json(err); }
+    // Her kullanıcı için son 3 günlüğü (Diary) bulup ekliyoruz
+    const usersWithDiaries = await Promise.all(
+      users.map(async (user) => {
+        // Diary modelini burada import ettiğinden emin olmalısın
+        const diaries = await Diary.find({ userId: user._id })
+          .sort({ createdAt: -1 })
+          .limit(3)
+          .select("title content color"); 
+        
+        return { 
+          ...user._doc, 
+          lastDiaries: diaries // Frontend'de kullanacağımız yeni alan
+        };
+      })
+    );
+
+    res.status(200).json(usersWithDiaries);
+  } catch (err) {
+    res.status(500).json({ message: "Kullanıcılar getirilemedi", error: err });
+  }
 };
+  
 
 export const getUserProfile = async (req, res) => {
   try {

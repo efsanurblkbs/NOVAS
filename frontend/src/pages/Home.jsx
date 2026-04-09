@@ -47,11 +47,12 @@ const Home = ({ currentUser }) => {
             />
           </div>
         </header>
-<DailyCards />
+
+        <DailyCards />
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           <AnimatePresence>
             {loading ? (
-              /* SKELETON LOADING: Veri gelene kadar gösterilen sahte kartlar */
               [...Array(6)].map((_, i) => (
                 <div key={i} className="bg-white/50 p-8 rounded-[3rem] h-64 animate-pulse flex flex-col items-center justify-center space-y-4">
                   <div className="w-16 h-16 bg-slate-200 rounded-full"></div>
@@ -76,20 +77,36 @@ const Home = ({ currentUser }) => {
                           <p className="text-[9px] bg-slate-50 text-slate-400 px-2 py-0.5 rounded-full uppercase font-black">{u.followers?.length || 0} Takipçi</p>
                         </div>
                       </div>
+                      
+                      {/* --- YENİLENEN DEFTER GÖRÜNÜMÜ --- */}
                       <div className="flex-1 mb-6">
-                        {u.previewPost ? (
-                          <div className="pl-3 border-l-2 border-[#FFB347]">
-                            <p className="text-[9px] font-black text-[#FFB347] uppercase mb-1">Son Notu</p>
-                            <p className="text-xs text-slate-500 font-bold truncate">"{u.previewPost}"</p>
+                        {u.lastDiaries && u.lastDiaries.length > 0 ? (
+                          <div className="flex gap-2 h-20">
+                            {u.lastDiaries.map((diary, idx) => (
+                              <div 
+                                key={idx} 
+                                className="flex-1 rounded-2xl p-2 flex flex-col justify-between border border-slate-50 shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+                                style={{ backgroundColor: diary.color || '#F8FAFC' }}
+                              >
+                                <p className="text-[7px] font-black uppercase truncate text-slate-800 mb-1">
+                                  {diary.title || "Not"}
+                                </p>
+                                <p className="text-[7px] text-slate-500 font-medium line-clamp-3 leading-tight">
+                                  {diary.content}
+                                </p>
+                              </div>
+                            ))}
                           </div>
                         ) : (
-                          <div className="pl-3 border-l-2 border-slate-100">
-                            <p className="text-[9px] font-black text-slate-300 uppercase mb-1">Henüz yok</p>
+                          <div className="pl-3 border-l-2 border-slate-100 py-2">
+                            <p className="text-[9px] font-black text-slate-300 uppercase italic">Henüz defter yok</p>
                           </div>
                         )}
                       </div>
-                      <div className="bg-slate-50 rounded-2xl p-3 text-center">
-                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic">Günlüğü Gör</span>
+                      {/* --------------------------------- */}
+
+                      <div className="bg-slate-50 rounded-2xl p-3 text-center group-hover:bg-[#FFB347]/10 transition-all">
+                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic group-hover:text-[#FFB347]">Günlüğü Gör</span>
                       </div>
                     </div>
                   </Link>
