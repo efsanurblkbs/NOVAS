@@ -23,42 +23,42 @@ export const getUserDiaries = async (req, res) => {
 
     // Evaluate locking mechanism for the requester
     const parsedDiaries = diaries.map(diary => {
-       const isOwner = diary.authorId === req.user.id;
-       const isGranted = diary.grantedAccess.includes(req.user.id);
-       const locked = diary.isPrivate && !isOwner && !isGranted;
-       
-       return { ...diary._doc, isLocked: locked };
+      const isOwner = diary.authorId === req.user.id;
+      const isGranted = diary.grantedAccess.includes(req.user.id);
+      const locked = diary.isPrivate && !isOwner && !isGranted;
+
+      return { ...diary._doc, isLocked: locked };
     });
-    
+
     res.status(200).json(parsedDiaries);
   } catch (err) { res.status(500).json(err); }
 };
 
 export const getDiaryById = async (req, res) => {
-   try {
-     const diary = await Diary.findById(req.params.id);
-     if(!diary) return res.status(404).json("Defter bulunamadı.");
+  try {
+    const diary = await Diary.findById(req.params.id);
+    if (!diary) return res.status(404).json("Defter bulunamadı.");
 
-     const isOwner = diary.authorId === req.user.id;
-     const isGranted = diary.grantedAccess.includes(req.user.id);
-     
-     // Even if locked, we return the cover info so they can request access.
-     const locked = diary.isPrivate && !isOwner && !isGranted;
-     res.status(200).json({ ...diary._doc, isLocked: locked });
-   } catch(err) { res.status(500).json(err); }
+    const isOwner = diary.authorId === req.user.id;
+    const isGranted = diary.grantedAccess.includes(req.user.id);
+
+    // Even if locked, we return the cover info so they can request access.
+    const locked = diary.isPrivate && !isOwner && !isGranted;
+    res.status(200).json({ ...diary._doc, isLocked: locked });
+  } catch (err) { res.status(500).json(err); }
 };
 
 export const deleteDiary = async (req, res) => {
   try {
-     const diary = await Diary.findById(req.params.id);
-     if(!diary) return res.status(404).json("Defter zaten yok.");
+    const diary = await Diary.findById(req.params.id);
+    if (!diary) return res.status(404).json("Defter zaten yok.");
 
-     if(diary.authorId === req.user.id) {
-       await Post.deleteMany({ diaryId: diary._id });
-       await diary.deleteOne();
-       res.status(200).json("Defter ve içindeki sayfalar ateşe atılıp yakıldı.");
-     } else {
-       res.status(403).json("Yetkisiz işlem.");
-     }
-  } catch(err) { res.status(500).json(err); }
+    if (diary.authorId === req.user.id) {
+      await Post.deleteMany({ diaryId: diary._id });
+      await diary.deleteOne();
+      res.status(200).json("Defter ve içindeki sayfalar ateşe atılıp yakıldı.");
+    } else {
+      res.status(403).json("Yetkisiz işlem.");
+    }
+  } catch (err) { res.status(500).json(err); }
 };

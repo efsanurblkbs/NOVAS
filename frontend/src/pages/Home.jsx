@@ -30,21 +30,21 @@ const Home = ({ currentUser }) => {
     <div className="w-full h-full p-4 md:p-12 overflow-y-auto custom-scrollbar bg-slate-50/30 overflow-x-hidden">
       <div className="max-w-4xl mx-auto w-full">
         <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-           <div>
-             <h1 className="text-4xl md:text-5xl font-black text-slate-800 italic uppercase tracking-tighter mb-2">Keşfet</h1>
-             <p className="text-[10px] md:text-sm font-bold text-slate-400 uppercase flex items-center gap-2">
-                <Sparkles size={16} className="text-[#FFB347]" /> İnsanları bul
-             </p>
-           </div>
-           <div className="relative w-full md:w-72">
-             <input 
-               type="text" 
-               placeholder="Kullanıcı ara..." 
-               value={searchQuery}
-               onChange={(e) => setSearchQuery(e.target.value)}
-               className="w-full pl-6 pr-4 py-4 bg-white border-none rounded-full shadow-sm focus:ring-2 focus:ring-[#FFB347]/30 text-slate-700 font-bold placeholder:text-slate-300"
-             />
-           </div>
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black text-slate-800 italic uppercase tracking-tighter mb-2">Keşfet</h1>
+            <p className="text-[10px] md:text-sm font-bold text-slate-400 uppercase flex items-center gap-2">
+              <Sparkles size={16} className="text-[#FFB347]" /> İnsanları bul
+            </p>
+          </div>
+          <div className="relative w-full md:w-72">
+            <input
+              type="text"
+              placeholder="Kullanıcı ara..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-6 pr-4 py-4 bg-white border-none rounded-full shadow-sm focus:ring-2 focus:ring-[#FFB347]/30 text-slate-700 font-bold placeholder:text-slate-300"
+            />
+          </div>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -59,7 +59,7 @@ const Home = ({ currentUser }) => {
               ))
             ) : (
               filteredUsers.map(u => (
-                <motion.div key={u._id} initial={{opacity:0, y:20}} animate={{opacity:1, y:0}}>
+                <motion.div key={u._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                   <Link to={`/profile/${u._id}`}>
                     <div className="bg-white p-8 rounded-[3rem] shadow-sm hover:shadow-xl transition-all group h-full flex flex-col border border-slate-50">
                       <div className="flex items-center gap-4 mb-6">
@@ -78,17 +78,17 @@ const Home = ({ currentUser }) => {
                       <div className="flex-1 mb-6">
                         {u.previewPost ? (
                           <div className="pl-3 border-l-2 border-[#FFB347]">
-                             <p className="text-[9px] font-black text-[#FFB347] uppercase mb-1">Son Notu</p>
-                             <p className="text-xs text-slate-500 font-bold truncate">"{u.previewPost}"</p>
+                            <p className="text-[9px] font-black text-[#FFB347] uppercase mb-1">Son Notu</p>
+                            <p className="text-xs text-slate-500 font-bold truncate">"{u.previewPost}"</p>
                           </div>
                         ) : (
                           <div className="pl-3 border-l-2 border-slate-100">
-                             <p className="text-[9px] font-black text-slate-300 uppercase mb-1">Henüz yok</p>
+                            <p className="text-[9px] font-black text-slate-300 uppercase mb-1">Henüz yok</p>
                           </div>
                         )}
                       </div>
                       <div className="bg-slate-50 rounded-2xl p-3 text-center">
-                         <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic">Günlüğü Gör</span>
+                        <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic">Günlüğü Gör</span>
                       </div>
                     </div>
                   </Link>
