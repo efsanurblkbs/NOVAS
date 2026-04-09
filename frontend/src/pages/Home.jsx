@@ -3,6 +3,7 @@ import api from "../api";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Search } from "lucide-react";
+import DailyCards from "../components/DailyCards";
 
 const Home = ({ currentUser }) => {
   const [users, setUsers] = useState([]);
@@ -46,7 +47,7 @@ const Home = ({ currentUser }) => {
             />
           </div>
         </header>
-
+<DailyCards />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           <AnimatePresence>
             {loading ? (
