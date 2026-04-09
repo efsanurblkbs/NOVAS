@@ -15,6 +15,7 @@ const Home = ({ currentUser }) => {
       setLoading(true);
       try {
         const res = await api.get("/users");
+        // Kendimizi listeden çıkarıyoruz
         setUsers(res.data.filter(u => u._id !== currentUser._id));
       } catch (err) {
         console.error("Kullanıcılar getirilemedi:", err);
@@ -30,6 +31,7 @@ const Home = ({ currentUser }) => {
   return (
     <div className="w-full h-full p-4 md:p-12 overflow-y-auto custom-scrollbar bg-slate-50/30 overflow-x-hidden">
       <div className="max-w-4xl mx-auto w-full">
+        {/* HEADER KISMI */}
         <header className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <h1 className="text-4xl md:text-5xl font-black text-slate-800 italic uppercase tracking-tighter mb-2">Keşfet</h1>
@@ -48,11 +50,14 @@ const Home = ({ currentUser }) => {
           </div>
         </header>
 
+        {/* GÜNLÜK KARTLAR (24 SAATTE BİR DEĞİŞEN) */}
         <DailyCards />
 
+        {/* KULLANICI LİSTESİ */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           <AnimatePresence>
             {loading ? (
+              /* SKELETON LOADING */
               [...Array(6)].map((_, i) => (
                 <div key={i} className="bg-white/50 p-8 rounded-[3rem] h-64 animate-pulse flex flex-col items-center justify-center space-y-4">
                   <div className="w-16 h-16 bg-slate-200 rounded-full"></div>
@@ -64,6 +69,8 @@ const Home = ({ currentUser }) => {
                 <motion.div key={u._id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                   <Link to={`/profile/${u._id}`}>
                     <div className="bg-white p-8 rounded-[3rem] shadow-sm hover:shadow-xl transition-all group h-full flex flex-col border border-slate-50">
+                      
+                      {/* KULLANICI BİLGİSİ */}
                       <div className="flex items-center gap-4 mb-6">
                         {u.profilePicture ? (
                           <img src={u.profilePicture} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-transparent group-hover:border-[#FF9B9B]/50 transition-all" />
@@ -78,22 +85,20 @@ const Home = ({ currentUser }) => {
                         </div>
                       </div>
                       
-                      {/* --- YENİLENEN DEFTER GÖRÜNÜMÜ --- */}
+                      {/* MİNİ DEFTER GÖRÜNÜMLERİ (YENİLENEN KISIM) */}
                       <div className="flex-1 mb-6">
                         {u.lastDiaries && u.lastDiaries.length > 0 ? (
                           <div className="flex gap-2 h-20">
                             {u.lastDiaries.map((diary, idx) => (
                               <div 
                                 key={idx} 
-                                className="flex-1 rounded-2xl p-2 flex flex-col justify-between border border-slate-50 shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
-                                style={{ backgroundColor: diary.color || '#F8FAFC' }}
+                                className="flex-1 rounded-2xl p-2 flex flex-col justify-center items-center border border-white/40 shadow-sm transition-transform group-hover:scale-105"
+                                style={{ backgroundColor: diary.coverColor || '#A29BFE' }}
                               >
-                                <p className="text-[7px] font-black uppercase truncate text-slate-800 mb-1">
-                                  {diary.title || "Not"}
+                                <p className="text-[7px] font-black uppercase text-white drop-shadow-md text-center leading-tight break-words px-1">
+                                  {diary.title || "Defter"}
                                 </p>
-                                <p className="text-[7px] text-slate-500 font-medium line-clamp-3 leading-tight">
-                                  {diary.content}
-                                </p>
+                                <div className="mt-1 w-3 h-0.5 bg-white/30 rounded-full"></div>
                               </div>
                             ))}
                           </div>
@@ -103,8 +108,8 @@ const Home = ({ currentUser }) => {
                           </div>
                         )}
                       </div>
-                      {/* --------------------------------- */}
 
+                      {/* ALT BUTON */}
                       <div className="bg-slate-50 rounded-2xl p-3 text-center group-hover:bg-[#FFB347]/10 transition-all">
                         <span className="text-[9px] text-slate-400 font-black uppercase tracking-widest italic group-hover:text-[#FFB347]">Günlüğü Gör</span>
                       </div>

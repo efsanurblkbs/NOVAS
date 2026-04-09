@@ -14,23 +14,21 @@ export const updateAvatar = async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 };
 
-// userController.js içindeki getAllUsers fonksiyonu
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password");
     
-    // Her kullanıcı için son 3 günlüğü (Diary) bulup ekliyoruz
     const usersWithDiaries = await Promise.all(
       users.map(async (user) => {
-        // Diary modelini burada import ettiğinden emin olmalısın
-        const diaries = await Diary.find({ userId: user._id })
+        // userId yerine authorId kullanıyoruz
+        const diaries = await Diary.find({ authorId: user._id })
           .sort({ createdAt: -1 })
           .limit(3)
-          .select("title content color"); 
+          .select("title coverColor"); // Senin modelinde color değil coverColor var
         
         return { 
           ...user._doc, 
-          lastDiaries: diaries // Frontend'de kullanacağımız yeni alan
+          lastDiaries: diaries 
         };
       })
     );
