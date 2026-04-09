@@ -5,10 +5,8 @@ import Notification from "../models/Notification.js";
 export const updateAvatar = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "Resim yüklenemedi." });
-    
     const user = await User.findByIdAndUpdate(req.params.id, { $set: { profilePicture: req.file.path } }, { new: true });
     if (!user) return res.status(404).json({ error: "Kullanıcı bulunamadı." });
-
     const { password, updatedAt, ...other } = user._doc;
     res.status(200).json(other);
   } catch (err) { res.status(500).json(err); }
@@ -17,28 +15,18 @@ export const updateAvatar = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password");
-    
     const usersWithDiaries = await Promise.all(
       users.map(async (user) => {
-        // userId yerine authorId kullanıyoruz
         const diaries = await Diary.find({ authorId: user._id })
           .sort({ createdAt: -1 })
           .limit(3)
-          .select("title coverColor"); // Senin modelinde color değil coverColor var
-        
-        return { 
-          ...user._doc, 
-          lastDiaries: diaries 
-        };
+          .select("title coverColor");
+        return { ...user._doc, lastDiaries: diaries };
       })
     );
-
     res.status(200).json(usersWithDiaries);
-  } catch (err) {
-    res.status(500).json({ message: "Kullanıcılar getirilemedi", error: err });
-  }
+  } catch (err) { res.status(500).json({ message: "Kullanıcılar getirilemedi", error: err }); }
 };
-  
 
 export const getUserProfile = async (req, res) => {
   try {
@@ -56,9 +44,9 @@ export const followUser = async (req, res) => {
       const currentUser = await User.findById(req.user.id);
       if (!user.followers.includes(req.user.id)) {
         await user.updateOne({ $push: { followers: req.user.id } });
-        await currentUser.updateOne({ $push: { followings: req.params.id } });
+        // DÜZELTME: followings -> following
+        await currentUser.updateOne({ $push: { following: req.params.id } });
         
-        // Takip Bildirimi
         const newNotif = new Notification({
            senderId: currentUser._id.toString(),
            senderName: currentUser.username,
@@ -67,7 +55,6 @@ export const followUser = async (req, res) => {
            status: "PENDING"
         });
         await newNotif.save();
-
         res.status(200).json("Kullanıcı takip edildi.");
       } else { res.status(403).json("Bu kullanıcıyı zaten takip ediyorsun.");}
     } catch (err) { res.status(500).json(err); }
@@ -81,7 +68,8 @@ export const unfollowUser = async (req, res) => {
       const currentUser = await User.findById(req.user.id);
       if (user.followers.includes(req.user.id)) {
         await user.updateOne({ $pull: { followers: req.user.id } });
-        await currentUser.updateOne({ $pull: { followings: req.params.id } });
+        // DÜZELTME: followings -> following
+        await currentUser.updateOne({ $pull: { following: req.params.id } });
         res.status(200).json("Takipten çıkıldı.");
       } else { res.status(403).json("Zaten takip etmiyorsun."); }
     } catch (err) { res.status(500).json(err); }
@@ -90,15 +78,13 @@ export const unfollowUser = async (req, res) => {
 
 export const removeFollower = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id); // Bendeyim
-    const follower = await User.findById(req.params.id); // Çıkarılacak takipçi
-    
+    const user = await User.findById(req.user.id);
+    const follower = await User.findById(req.params.id);
     if (user.followers.includes(req.params.id)) {
       await user.updateOne({ $pull: { followers: req.params.id } });
-      await follower.updateOne({ $pull: { followings: req.user.id } });
+      // DÜZELTME: followings -> following
+      await follower.updateOne({ $pull: { following: req.user.id } });
       res.status(200).json("Takipçi başarıyla çıkarıldı.");
-    } else {
-      res.status(404).json("Takipçi bulunamadı.");
-    }
+    } else { res.status(404).json("Takipçi bulunamadı."); }
   } catch (err) { res.status(500).json(err); }
 };
