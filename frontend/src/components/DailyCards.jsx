@@ -1,50 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import "./DailyCards.css"; 
+import api from '../api'; // Senin merkezi api yapılandırman
 
 const DailyCards = () => {
     const [cards, setCards] = useState(null);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchCards = async () => {
             try {
-                
-                const res = await axios.get('http://localhost:8800/api/daily/cards');
+                const res = await api.get('/daily/cards');
                 setCards(res.data);
-                setLoading(false);
             } catch (err) {
-                console.log("Kartlar yüklenirken bir hata oluştu dostum:", err);
-                setLoading(false);
+                console.log("Kartlar yüklenemedi", err);
             }
         };
         fetchCards();
     }, []);
 
-    if (loading || !cards) return null;
+    if (!cards) return null;
 
     return (
-        <div className="daily-cards-container">
-            <div className="daily-card famous">
-                <div className="card-icon">🌟</div>
-                <h5>Günün Sözü</h5>
-                <p>"{cards.famous.text}"</p>
-                <span>- {cards.famous.author}</span>
-            </div>
-
-            <div className="daily-card goal">
-                <div className="card-icon">🎯</div>
-                <h5>Günlük Hedef</h5>
-                <p>{cards.goal.text}</p>
-                <span>Sana inanıyorum!</span>
-            </div>
-
-            <div className="daily-card motivation">
-                <div className="card-icon">🔥</div>
-                <h5>Motivasyon</h5>
-                <p>"{cards.motivation.text}"</p>
-                <span>Hadi başlayalım!</span>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            {[
+                { title: "Günün Sözü", data: cards.famous, color: "#6c63ff" },
+                { title: "Günlük Hedef", data: cards.goal, color: "#FFB347" },
+                { title: "Motivasyon", data: cards.motivation, color: "#FF9B9B" }
+            ].map((item, index) => (
+                <div key={index} className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-50 flex flex-col justify-center min-h-[180px] transition-all hover:shadow-md">
+                    <span className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: item.color }}>
+                        {item.title}
+                    </span>
+                    <p className="text-sm md:text-base text-slate-600 font-bold leading-relaxed italic">
+                        "{item.data.text}"
+                    </p>
+                    {item.data.author && (
+                        <span className="text-[9px] text-slate-400 font-black uppercase mt-3 italic text-right">
+                            — {item.data.author}
+                        </span>
+                    )}
+                </div>
+            ))}
         </div>
     );
 };
