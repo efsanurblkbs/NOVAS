@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import api from "../api";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Search, Users, Map } from "lucide-react";
+import { Sparkles, Users, Map } from "lucide-react";
 import DailyCards from "../components/DailyCards";
 
 const Home = ({ currentUser }) => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("explore"); // "explore" veya "following"
+  const [activeTab, setActiveTab] = useState("explore");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -17,7 +17,7 @@ const Home = ({ currentUser }) => {
       try {
         const res = await api.get("/users");
         // Kendimizi listeden çıkarıyoruz
-        setUsers(res.data.filter(u => u._id !== currentUser._id));
+        setUsers(res.data.filter(u => u._id !== currentUser?._id));
       } catch (err) {
         console.error("Kullanıcılar getirilemedi:", err);
       } finally {
@@ -27,16 +27,18 @@ const Home = ({ currentUser }) => {
     if (currentUser) fetchUsers();
   }, [currentUser]);
 
-  // Sekme ve Arama Filtreleme Mantığı
+  // --- TAKİP LİSTESİ FİLTRELEME (GÜÇLENDİRİLMİŞ) ---
   const filteredUsers = users.filter((u) => {
     const matchesSearch = u.username.toLowerCase().includes(searchQuery.toLowerCase());
     
     if (activeTab === "following") {
-      // Sadece currentUser'ın takip ettiği kişileri göster
-      return matchesSearch && currentUser.following?.includes(u._id);
+      // currentUser.following içindeki ID'leri string'e çevirip karşılaştırıyoruz
+      const followingList = currentUser?.following || [];
+      const isFollowed = followingList.some(id => id.toString() === u._id.toString());
+      return matchesSearch && isFollowed;
     }
     
-    return matchesSearch; // Keşfet modunda herkesi göster
+    return matchesSearch;
   });
 
   return (
@@ -64,7 +66,7 @@ const Home = ({ currentUser }) => {
           </div>
         </header>
 
-        {/* SEKMELER (TABS) */}
+        {/* SEKMELER */}
         <div className="flex gap-4 mb-8">
           <button
             onClick={() => setActiveTab("explore")}
@@ -88,11 +90,9 @@ const Home = ({ currentUser }) => {
           </button>
         </div>
 
-        {/* GÜNLÜK MOTİVASYON KARTLARI */}
         <DailyCards />
 
-        {/* KULLANICI KARTLARI GRİDİ */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-4">
           <AnimatePresence mode="wait">
             {loading ? (
               [...Array(6)].map((_, i) => (
@@ -105,9 +105,9 @@ const Home = ({ currentUser }) => {
               filteredUsers.map(u => (
                 <motion.div 
                   key={u._id} 
-                  initial={{ opacity: 0, scale: 0.9 }} 
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.2 }}
                 >
                   <Link to={`/profile/${u._id}`}>
@@ -158,12 +158,17 @@ const Home = ({ currentUser }) => {
                 </motion.div>
               ))
             ) : (
-              /* EĞER LİSTE BOŞSA GÖSTERİLECEK MESAJ */
-              <div className="col-span-full py-20 text-center">
-                <p className="text-slate-400 font-bold italic uppercase tracking-widest text-xs">
-                  {activeTab === "following" ? "Henüz kimseyi takip etmiyorsun pofuduk dostum..." : "Aradığın kriterde kimse bulunamadı."}
-                </p>
-              </div>
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                className="col-span-full py-20 text-center"
+              >
+                <div className="bg-white/50 inline-block p-8 rounded-[3rem] border border-dashed border-slate-200">
+                  <p className="text-slate-400 font-bold italic uppercase tracking-widest text-xs">
+                    {activeTab === "following" ? "Buralar biraz sessiz... Henüz kimseyi takip etmiyorsun." : "Kimseyi bulamadık pofuduk dostum."}
+                  </p>
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
