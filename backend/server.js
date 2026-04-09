@@ -7,6 +7,7 @@ import userRoute from "./routes/users.js";
 import postRoute from "./routes/posts.js";
 import diaryRoute from "./routes/diaries.js";
 import notificationRoute from "./routes/notifications.js";
+import dailyRoute from "./routes/daily.js";
 
 dotenv.config();
 const app = express();
@@ -29,6 +30,7 @@ app.use("/api/posts", postRoute);
 app.use("/api/users", userRoute);
 app.use("/api/diaries", diaryRoute);
 app.use("/api/notifications", notificationRoute);
+app.use("/api/daily", dailyRoute);
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Bağlandı! ✅"))
   .catch((err) => console.log(err));
