@@ -7,42 +7,46 @@ import DailyCards from "../components/DailyCards";
 
 const Home = ({ currentUser }) => {
   const [users, setUsers] = useState([]);
+  const [myFollowing, setMyFollowing] = useState([]); // Taze takip listesi için yeni state
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("explore");
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await api.get("/users");
-        setUsers(res.data.filter(u => u._id !== currentUser?._id));
+        // 1. Tüm kullanıcıları al
+        const usersRes = await api.get("/users");
+        
+        // 2. Kendi güncel verini (takip listeni) taze taze çek
+        const meRes = await api.get(`/users/${currentUser._id}`);
+        
+        // Hem following hem followings ihtimalini burada da birleştiriyoruz
+        const f1 = meRes.data.following || [];
+        const f2 = meRes.data.followings || [];
+        const combined = [...f1, ...f2].map(id => id.toString());
+
+        setMyFollowing(combined);
+        setUsers(usersRes.data.filter(u => u._id !== currentUser?._id));
       } catch (err) {
-        console.error("Kullanıcılar getirilemedi:", err);
+        console.error("Veri çekme hatası:", err);
       } finally {
         setLoading(false);
       }
     };
-    if (currentUser?._id) fetchUsers();
-  }, [currentUser]);
 
-  // --- HİBRİT FİLTRELEME MANTIĞI ---
+    if (currentUser?._id) fetchData();
+  }, [currentUser, activeTab]); // Sekme değiştiğinde de veriyi tazelemesi için activeTab ekledik
+
+  // --- FİLTRELEME MANTIĞI (Taze Listeye Göre) ---
   const filteredUsers = users.filter((u) => {
     const matchesSearch = u.username.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Veritabanındaki hem 'following' hem 'followings' alanlarını birleştirip tek bir liste yapıyoruz
-    const f1 = currentUser?.following || [];
-    const f2 = currentUser?.followings || [];
-    const combinedFollowing = [...f1, ...f2].map(id => id.toString());
-    
-    // Bu kullanıcı takip edilenler listesinde var mı?
-    const isFollowed = combinedFollowing.includes(u._id.toString());
+    const isFollowed = myFollowing.includes(u._id.toString());
 
     if (activeTab === "following") {
-      // Arkadaşlar sekmesi: Sadece takip edilenler
       return matchesSearch && isFollowed;
     } else {
-      // Keşfet sekmesi: Sadece takip EDİLMEYENLER
       return matchesSearch && !isFollowed;
     }
   });
