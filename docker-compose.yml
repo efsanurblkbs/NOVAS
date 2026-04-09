@@ -7,7 +7,7 @@ services:
     ports:
       - "8800:8800"
     environment:
-      - MONGO_URL='mongodb+srv://arines4927_db_user:efsa1234@novas.yrdxc1g.mongodb.net/?appName=novas'
+      - MONGO_URL=${MONGO_URL}
     
   
 
