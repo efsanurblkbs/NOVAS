@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import api from "../api";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Search, PlusCircle, Book, X } from "lucide-react";
+import { Lock, Search, PlusCircle, Book, X, Settings, Trash2, ShieldAlert, User, Mail, Key } from "lucide-react";
 import useStore from "../store/useStore";
 import DiaryView from "../components/DiaryView";
 
@@ -10,10 +10,18 @@ const rainbow = "linear-gradient(90deg, #FFB5B5, #FFD6A5, #CAFFBF, #9BF6FF, #A0C
 
 const Profile = ({ currentUser }) => {
   const { id } = useParams();
-  const { notifications } = useStore();
+  const { notifications, logout, setUser } = useStore();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [diaries, setDiaries] = useState([]);
   const [activeDiary, setActiveDiary] = useState(null);
+
+  // Modals
+  const [showSettings, setShowSettings] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState("");
+  const [editFormData, setEditFormData] = useState({ username: "", email: "", password: "" });
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     if(id && currentUser) {
@@ -51,6 +59,49 @@ const Profile = ({ currentUser }) => {
       await api.put(`/users/${profile._id}/${path}`, { userId: currentUser._id });
       fetchProfile(id);
     } catch(err) {}
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    try {
+      // Sadece dolu alanları gönder
+      const dataToUpdate = {};
+      if (editFormData.username) dataToUpdate.username = editFormData.username;
+      if (editFormData.email) dataToUpdate.email = editFormData.email;
+      if (editFormData.password) dataToUpdate.password = editFormData.password;
+
+      if (Object.keys(dataToUpdate).length === 0) {
+        setShowSettings(false);
+        setIsUpdating(false);
+        return;
+      }
+
+      const res = await api.put(`/users/${currentUser._id}`, dataToUpdate);
+      setUser(res.data);
+      setProfile(res.data);
+      setShowSettings(false);
+      alert("Hesap bilgilerin başarıyla güncellendi ✨");
+    } catch (err) {
+      alert(err.response?.data?.error || "Güncelleme başarısız!");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteInput !== "HESABIMI SİL") {
+      alert("Lütfen doğrulamayı doğru şekilde girin.");
+      return;
+    }
+    try {
+      await api.delete(`/users/${currentUser._id}`);
+      logout();
+      navigate("/");
+      alert("Hesabın başarıyla silindi. Seni özleyeceğiz 🌈");
+    } catch (err) {
+      alert("Silme işlemi başarısız!");
+    }
   };
 
   const handleDiaryClick = async (diary) => {
@@ -96,9 +147,16 @@ const Profile = ({ currentUser }) => {
             </div>
             
             <div className="flex items-center gap-4">
-              {currentUser._id !== profile._id && (
+              {currentUser._id !== profile._id ? (
                 <button onClick={handleFollow} className="px-8 py-4 rounded-full text-xs font-black text-white uppercase tracking-widest shadow-md hover:scale-105 transition-transform" style={{background: rainbow}}>
                   {profile.followers?.includes(currentUser._id) ? "Takibi Bırak" : "Takip Et"}
+                </button>
+              ) : (
+                <button onClick={() => {
+                  setEditFormData({ username: profile.username, email: profile.email, password: "" });
+                  setShowSettings(true);
+                }} className="p-4 rounded-full bg-white shadow-sm border border-slate-100 text-slate-400 hover:text-[#A29BFE] hover:shadow-md transition-all">
+                  <Settings size={20} />
                 </button>
               )}
             </div>
@@ -182,6 +240,90 @@ const Profile = ({ currentUser }) => {
           </div>
         </div>
       </div>
+
+      {/* Settings Modal */}
+      <AnimatePresence>
+        {showSettings && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={() => setShowSettings(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
+            <motion.div initial={{scale:0.9, opacity:0, y:20}} animate={{scale:1, opacity:1, y:0}} exit={{scale:0.9, opacity:0, y:20}} className="bg-white rounded-[3rem] shadow-2xl w-full max-w-md overflow-hidden z-10 relative">
+              <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+                <h3 className="text-xl font-black italic uppercase tracking-tighter text-slate-800 flex items-center gap-2">
+                  <Settings size={20} className="text-[#A29BFE]" /> Hesap Ayarları
+                </h3>
+                <button onClick={() => setShowSettings(false)} className="p-2 hover:bg-white rounded-full transition-colors text-slate-400"><X size={20}/></button>
+              </div>
+
+              <form onSubmit={handleUpdate} className="p-8 space-y-5">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Kullanıcı Adı</label>
+                  <div className="relative">
+                    <User size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" />
+                    <input className="w-full pl-14 pr-6 py-4 bg-slate-50 rounded-2xl outline-none border-2 border-transparent focus:border-[#A29BFE]/20 transition-all font-bold text-slate-700" value={editFormData.username} onChange={e=>setEditFormData({...editFormData, username: e.target.value})} />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">E-posta</label>
+                  <div className="relative">
+                    <Mail size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" />
+                    <input className="w-full pl-14 pr-6 py-4 bg-slate-50 rounded-2xl outline-none border-2 border-transparent focus:border-[#A29BFE]/20 transition-all font-bold text-slate-700" type="email" value={editFormData.email} onChange={e=>setEditFormData({...editFormData, email: e.target.value})} />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4">Yeni Şifre (Değiştirmek istemiyorsan boş bırak)</label>
+                  <div className="relative">
+                    <Key size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300" />
+                    <input className="w-full pl-14 pr-6 py-4 bg-slate-50 rounded-2xl outline-none border-2 border-transparent focus:border-[#A29BFE]/20 transition-all font-bold text-slate-700" type="password" placeholder="••••••••" value={editFormData.password} onChange={e=>setEditFormData({...editFormData, password: e.target.value})} />
+                  </div>
+                </div>
+
+                <button type="submit" disabled={isUpdating} className="w-full py-5 rounded-2xl text-white font-black uppercase text-[10px] tracking-[0.3em] shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all relative overflow-hidden group" style={{background: rainbow}}>
+                  <span className="relative z-10">{isUpdating ? "Güncelleniyor..." : "Bilgilerimi Kaydet"}</span>
+                  <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                </button>
+
+                <div className="pt-6 border-t border-slate-50">
+                  <button type="button" onClick={() => { setShowSettings(false); setShowDeleteConfirm(true); }} className="w-full py-4 text-[10px] font-black uppercase tracking-[0.2em] text-rose-400 hover:text-rose-600 transition-colors flex items-center justify-center gap-2">
+                    <Trash2 size={14} /> Hesabımı Silmek İstiyorum
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={() => setShowDeleteConfirm(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" />
+            <motion.div initial={{scale:0.9, opacity:0}} animate={{scale:1, opacity:1}} exit={{scale:0.9, opacity:0}} className="bg-white rounded-[3rem] shadow-2xl w-full max-w-md p-10 z-10 relative text-center">
+              <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <ShieldAlert size={40} className="text-rose-500" />
+              </div>
+              <h3 className="text-2xl font-black italic uppercase tracking-tighter text-slate-800 mb-4">Hesabını Sil?</h3>
+              <p className="text-slate-500 text-sm font-bold mb-8 leading-relaxed">
+                Bu işlem geri alınamaz. Tüm defterlerin, yazıların ve etkileşimlerin sonsuza dek silinecektir. Devam etmek istiyor musun?
+              </p>
+              
+              <div className="space-y-4">
+                <div className="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 text-left ml-2">Doğrulamak için "HESABIMI SİL" yazın</p>
+                  <input className="w-full px-4 py-3 bg-white rounded-xl outline-none border-2 border-transparent focus:border-rose-200 transition-all font-bold text-center text-slate-700" placeholder="HESABIMI SİL" value={deleteInput} onChange={e=>setDeleteInput(e.target.value)} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 pt-4">
+                  <button onClick={() => setShowDeleteConfirm(false)} className="py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-slate-400 hover:bg-slate-50 transition-all">Vazgeç</button>
+                  <button onClick={handleDeleteAccount} disabled={deleteInput !== "HESABIMI SİL"} className="py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white bg-rose-500 shadow-lg shadow-rose-200 hover:bg-rose-600 disabled:opacity-50 disabled:shadow-none transition-all">Hesabı Sil</button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

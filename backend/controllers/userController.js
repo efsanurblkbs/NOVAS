@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import Diary from "../models/Diary.js";
 import Notification from "../models/Notification.js";
+import bcrypt from "bcryptjs";
 
 export const updateAvatar = async (req, res) => {
   try {
@@ -87,4 +88,43 @@ export const removeFollower = async (req, res) => {
       res.status(200).json("Takipçi başarıyla çıkarıldı.");
     } else { res.status(404).json("Takipçi bulunamadı."); }
   } catch (err) { res.status(500).json(err); }
+};
+
+export const updateUser = async (req, res) => {
+  if (req.params.id === req.user.id) {
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      req.body.password = await bcrypt.hash(req.body.password, salt);
+    }
+    try {
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.id,
+        { $set: req.body },
+        { new: true }
+      );
+      const { password, ...others } = updatedUser._doc;
+      res.status(200).json(others);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else {
+    return res.status(403).json("Sadece kendi hesabını güncelleyebilirsin!");
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  if (req.params.id === req.user.id) {
+    try {
+      // Önce kullanıcının defterlerini ve bildirimlerini sil (opsiyonel ama temizlik için iyi)
+      await Diary.deleteMany({ authorId: req.params.id });
+      await Notification.deleteMany({ $or: [{ senderId: req.params.id }, { receiverId: req.params.id }] });
+      
+      await User.findByIdAndDelete(req.params.id);
+      res.status(200).json("Hesabın başarıyla silindi.");
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else {
+    return res.status(403).json("Sadece kendi hesabını silebilirsin!");
+  }
 };
